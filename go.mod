@@ -1,3 +1,3 @@
-module go-ast-gen
+module github.com/joesonw/go-ast-gen
 
 go 1.12
