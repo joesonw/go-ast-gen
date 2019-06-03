@@ -57,6 +57,30 @@ var kindNames = map[Kind]string{
 	Method:     "Method",
 }
 
+var flatKinds = map[Kind]bool{
+	String:     true,
+	Bool:       true,
+	Byte:       true,
+	Int:        true,
+	Int8:       true,
+	Int16:      true,
+	Int32:      true,
+	Int64:      true,
+	Uint:       true,
+	Uint8:      true,
+	Uint16:     true,
+	Uint32:     true,
+	Uint64:     true,
+	Float32:    true,
+	Float64:    true,
+	Complex64:  true,
+	Complex128: true,
+}
+
 func (kind Kind) String() string {
 	return kindNames[kind]
+}
+
+func (kind Kind) IsFlat() bool {
+	return flatKinds[kind]
 }

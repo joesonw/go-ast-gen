@@ -5,8 +5,8 @@ var InvalidType = Type{
 }
 
 type Type struct {
-	kind    Kind
-	name string
+	kind  Kind
+	name  string
 	types []Type
 }
 
@@ -25,7 +25,7 @@ func (t Type) Types() []Type {
 func (t Type) String() string {
 	output := t.kind.String()
 	if t.name != "" {
-		output += "<"+t.name + ">"
+		output += "<" + t.name + ">"
 	}
 	for _, typ := range t.types {
 		output += "(" + typ.String() + ")"

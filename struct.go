@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-var builtInFlatKind = map[string]Kind{
+var flatTypes = map[string]Kind{
 	"string":     String,
 	"bool":       Bool,
 	"byte":       Byte,
@@ -63,7 +63,7 @@ func ParseType(expr ast.Expr) (Type, error) {
 	case *ast.Ident:
 		{
 			ident := expr.(*ast.Ident)
-			if kind, ok := builtInFlatKind[ident.Name]; ok {
+			if kind, ok := flatTypes[ident.Name]; ok {
 				return Type{
 					kind: kind,
 				}, nil
