@@ -1,3 +1,3 @@
-module go-ast-gen
+module astgen
 
 go 1.12

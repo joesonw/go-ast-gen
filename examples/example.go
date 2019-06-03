@@ -1,14 +1,14 @@
 package main
 
 import (
-	astgen "go-ast-gen"
+	astgen "astgen"
 	"go/ast"
 	"go/parser"
 	"go/token"
 )
 
 type structType struct {
-	typ *ast.StructType
+	typ  *ast.StructType
 	name string
 }
 
@@ -98,7 +98,7 @@ func main() {
 
 		if typ, ok := spec.Type.(*ast.StructType); ok {
 			structs = append(structs, &structType{
-				typ: typ,
+				typ:  typ,
 				name: spec.Name.Name,
 			})
 		}
