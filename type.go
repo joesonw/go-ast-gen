@@ -39,6 +39,8 @@ func (t Type) String() string {
 		return fmt.Sprintf("map[%s]%s", t.types[0].String(), t.types[1].String())
 	case Chan:
 		return "chan " + t.types[0].String()
+	case Imported:
+		return t.name + "." + t.types[0].String()
 	default:
 		return "INVALID!"
 	}

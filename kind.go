@@ -27,6 +27,7 @@ const (
 	Map
 	Interface
 	Chan
+	Imported
 )
 
 var kindNames = map[Kind]string{
@@ -53,6 +54,7 @@ var kindNames = map[Kind]string{
 	Map:        "Map",
 	Interface:  "interface{}",
 	Chan:       "Chan",
+	Imported:   "Imported",
 }
 
 var flatKinds = map[Kind]bool{

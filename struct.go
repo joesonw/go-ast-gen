@@ -26,7 +26,7 @@ var flatTypes = map[string]Kind{
 	"complex128": Complex128,
 }
 
-func ParseStruct(expr *ast.StructType) ([]Field, error) {
+func ParseStruct(expr *ast.StructType, importedNames ...string) ([]Field, error) {
 	var fields []Field
 	for _, field := range expr.Fields.List {
 		name := field.Names[0].Name
@@ -36,7 +36,7 @@ func ParseStruct(expr *ast.StructType) ([]Field, error) {
 				comments = append(comments, comment.Text)
 			}
 		}
-		typ, err := ParseType(field.Type)
+		typ, err := ParseType(field.Type, importedNames...)
 		if err != nil {
 			return nil, err
 		}
@@ -50,15 +50,15 @@ func ParseStruct(expr *ast.StructType) ([]Field, error) {
 	return fields, nil
 }
 
-func MustParseStruct(expr *ast.StructType) []Field {
-	fields, err := ParseStruct(expr)
+func MustParseStruct(expr *ast.StructType, importedNames ...string) []Field {
+	fields, err := ParseStruct(expr, importedNames...)
 	if err != nil {
 		panic(err)
 	}
 	return fields
 }
 
-func ParseType(expr ast.Expr) (Type, error) {
+func ParseType(expr ast.Expr, importedNames ...string) (Type, error) {
 	switch expr.(type) {
 	case *ast.Ident:
 		{
@@ -76,7 +76,7 @@ func ParseType(expr ast.Expr) (Type, error) {
 		}
 	case *ast.StarExpr:
 		{
-			t, err := ParseType(expr.(*ast.StarExpr).X)
+			t, err := ParseType(expr.(*ast.StarExpr).X, importedNames...)
 			if err != nil {
 				return t, err
 			}
@@ -88,11 +88,11 @@ func ParseType(expr ast.Expr) (Type, error) {
 	case *ast.MapType:
 		{
 			m := expr.(*ast.MapType)
-			key, err := ParseType(m.Key)
+			key, err := ParseType(m.Key, importedNames...)
 			if err != nil {
 				return key, err
 			}
-			value, err := ParseType(m.Value)
+			value, err := ParseType(m.Value, importedNames...)
 			if err != nil {
 				return value, err
 			}
@@ -104,7 +104,7 @@ func ParseType(expr ast.Expr) (Type, error) {
 	case *ast.ArrayType:
 		{
 			array := expr.(*ast.ArrayType)
-			ele, err := ParseType(array.Elt)
+			ele, err := ParseType(array.Elt, importedNames...)
 			if err != nil {
 				return ele, err
 			}
@@ -122,13 +122,37 @@ func ParseType(expr ast.Expr) (Type, error) {
 	case *ast.ChanType:
 		{
 			ch := expr.(*ast.ChanType)
-			ele, err := ParseType(ch.Value)
+			ele, err := ParseType(ch.Value, importedNames...)
 			if err != nil {
 				return ele, err
 			}
 			return Type{
 				kind:  Chan,
 				types: []Type{ele},
+			}, nil
+		}
+	case *ast.SelectorExpr:
+		{
+			sel := expr.(*ast.SelectorExpr)
+			pkg := sel.X.(*ast.Ident)
+			fullName := fmt.Sprintf("%s.%s", pkg.Name, sel.Sel.Name)
+			found := false
+			for _, n := range importedNames {
+				if n == fullName {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return InvalidType, fmt.Errorf("imported '%s' is not allowed", fullName)
+			}
+			return Type{
+				kind: Imported,
+				name: pkg.Name,
+				types: []Type{{
+					kind: Reference,
+					name: sel.Sel.Name,
+				}},
 			}, nil
 		}
 	default:

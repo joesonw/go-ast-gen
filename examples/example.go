@@ -34,6 +34,7 @@ func main() {
 			Float64 float64
 			Complex64 complex64
 			Complex128 complex128
+			Time time.Time
 		}
 
 		type ReferenceStruct struct {
@@ -106,7 +107,7 @@ func main() {
 	}
 
 	for _, s := range structs {
-		fields, err := astgen.ParseStruct(s.typ)
+		fields, err := astgen.ParseStruct(s.typ, "time.Time")
 		die(err)
 
 		println("")
