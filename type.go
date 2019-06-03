@@ -1,5 +1,7 @@
 package astgen
 
+import "fmt"
+
 var InvalidType = Type{
 	kind: Invalid,
 }
@@ -23,12 +25,21 @@ func (t Type) Types() []Type {
 }
 
 func (t Type) String() string {
-	output := t.kind.String()
-	if t.name != "" {
-		output += "<" + t.name + ">"
+	if t.kind.IsFlat() {
+		return t.kind.String()
 	}
-	for _, typ := range t.types {
-		output += "(" + typ.String() + ")"
+	switch t.kind {
+	case Reference:
+		return t.name
+	case Pointer:
+		return "*" + t.types[0].String()
+	case Slice:
+		return "[]" + t.types[0].String()
+	case Map:
+		return fmt.Sprintf("map[%s]%s", t.types[0].String(), t.types[1].String())
+	case Chan:
+		return "chan " + t.types[0].String()
+	default:
+		return "INVALID!"
 	}
-	return output
 }

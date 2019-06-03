@@ -27,34 +27,32 @@ const (
 	Map
 	Interface
 	Chan
-	Method
 )
 
 var kindNames = map[Kind]string{
-	String:     "String",
-	Bool:       "Bool",
-	Byte:       "Byte",
-	Int:        "Int",
-	Int8:       "Int8",
-	Int16:      "Int16",
-	Int32:      "Int32",
-	Int64:      "Int64",
-	Uint:       "Uint",
-	Uint8:      "Uint8",
-	Uint16:     "Uint16",
-	Uint32:     "Uint32",
-	Uint64:     "Uint64",
-	Float32:    "Float32",
-	Float64:    "Float64",
-	Complex64:  "Complex64",
-	Complex128: "Complex128",
+	String:     "string",
+	Bool:       "bool",
+	Byte:       "byte",
+	Int:        "int",
+	Int8:       "int8",
+	Int16:      "int16",
+	Int32:      "int32",
+	Int64:      "int64",
+	Uint:       "uint",
+	Uint8:      "uint8",
+	Uint16:     "uint16",
+	Uint32:     "uint32",
+	Uint64:     "uint64",
+	Float32:    "float32",
+	Float64:    "float64",
+	Complex64:  "complex64",
+	Complex128: "complex128",
 	Reference:  "Reference",
 	Pointer:    "Pointer",
 	Slice:      "Slice",
 	Map:        "Map",
-	Interface:  "Interface",
+	Interface:  "interface{}",
 	Chan:       "Chan",
-	Method:     "Method",
 }
 
 var flatKinds = map[Kind]bool{
@@ -75,6 +73,7 @@ var flatKinds = map[Kind]bool{
 	Float64:    true,
 	Complex64:  true,
 	Complex128: true,
+	Interface:  true,
 }
 
 func (kind Kind) String() string {
