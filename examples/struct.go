@@ -15,7 +15,7 @@ type structType struct {
 
 func main() {
 	var (
-		allFlatTypeStruct = `
+		input = `
 		package test
 
 		type AllFlatTypes struct {
@@ -83,7 +83,7 @@ func main() {
 	)
 
 	fs := token.NewFileSet()
-	f, err := parser.ParseFile(fs, "", allFlatTypeStruct, parser.AllErrors)
+	f, err := parser.ParseFile(fs, "", input, parser.AllErrors)
 	die(err)
 
 	var structs []*structType
@@ -111,10 +111,12 @@ func main() {
 		die(err)
 
 		println("")
-		println("  --   ", s.name)
+		println("struct ", s.name, " {")
 		for _, field := range fields {
-			println(field.Name(), field.Type().String())
+			println("    ", field.Name(), field.Type().String())
 		}
+		println("}")
+		println("")
 	}
 
 }
