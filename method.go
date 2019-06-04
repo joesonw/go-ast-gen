@@ -6,9 +6,10 @@ import (
 )
 
 type Method struct {
-	name string
-	ins  []Field
-	outs []Field
+	name     string
+	ins      []Field
+	outs     []Field
+	comments []string
 }
 
 func (m Method) Name() string {
@@ -23,6 +24,10 @@ func (m Method) Outs() []Field {
 	return m.outs[:]
 }
 
+func (m Method) Comments() []string {
+	return m.comments[:]
+}
+
 func (m Method) String() string {
 	ins := make([]string, len(m.ins))
 	outs := make([]string, len(m.outs))
@@ -32,5 +37,5 @@ func (m Method) String() string {
 	for i, out := range m.outs {
 		outs[i] = fmt.Sprintf("%s %s", out.name, out.typ.String())
 	}
-	return fmt.Sprintf("%s(%s) (%s)", m.name, strings.Join(ins, ","), strings.Join(outs, ","))
+	return fmt.Sprintf("%s(%s) (%s) %s", m.name, strings.Join(ins, ","), strings.Join(outs, ","), strings.Join(m.comments, ""))
 }

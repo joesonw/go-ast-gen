@@ -19,7 +19,7 @@ func main() {
 		package test
 
 		type AllFlatTypes struct {
-			String string
+			String string //test
 			Bool bool
 			Byte byte
 			Int int
@@ -83,7 +83,7 @@ func main() {
 	)
 
 	fs := token.NewFileSet()
-	f, err := parser.ParseFile(fs, "", input, parser.AllErrors)
+	f, err := parser.ParseFile(fs, "", input, parser.AllErrors|parser.ParseComments)
 	die(err)
 
 	var structs []*structType
@@ -113,7 +113,7 @@ func main() {
 		println("")
 		println("struct ", s.name, " {")
 		for _, field := range fields {
-			println("    ", field.Name(), field.Type().String())
+			println("    ", field.String())
 		}
 		println("}")
 		println("")

@@ -1,8 +1,13 @@
 package astgen
 
+import (
+	"fmt"
+	"strings"
+)
+
 type Field struct {
-	name string
-	typ Type
+	name     string
+	typ      Type
 	comments []string
 }
 
@@ -16,4 +21,8 @@ func (f Field) Type() Type {
 
 func (f Field) Comments() []string {
 	return f.comments[:]
+}
+
+func (f Field) String() string {
+	return fmt.Sprintf("%s %s %s", f.name, f.typ.String(), strings.Join(f.comments, "\n"))
 }

@@ -22,14 +22,14 @@ func main() {
 		type StructA struct {}
 
 		type A interface {
-			A(a *StructA, b time.Time) (int64, error)
+			A(a *StructA, b time.Time) (int64, error) //test
 			B(arr [][]string) error
 		}
 	`
 	)
 
 	fs := token.NewFileSet()
-	f, err := parser.ParseFile(fs, "", input, parser.AllErrors)
+	f, err := parser.ParseFile(fs, "", input, parser.AllErrors|parser.ParseComments)
 	die(err)
 
 	var interfaces []*interfaceType
