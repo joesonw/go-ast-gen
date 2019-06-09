@@ -107,7 +107,7 @@ func main() {
 	}
 
 	for _, s := range structs {
-		fields, err := astgen.ParseStruct(s.typ, "time.Time")
+		fields, err := astgen.ParseStruct(s.typ, func(name string) bool { return true })
 		die(err)
 
 		println("")

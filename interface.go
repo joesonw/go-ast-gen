@@ -4,7 +4,7 @@ import (
 	"go/ast"
 )
 
-func ParseInterface(expr *ast.InterfaceType, importedNames ...string) ([]Method, error) {
+func ParseInterface(expr *ast.InterfaceType, importer Importer) ([]Method, error) {
 	var methods []Method
 	for _, field := range expr.Methods.List {
 		name := field.Names[0].Name
@@ -20,7 +20,7 @@ func ParseInterface(expr *ast.InterfaceType, importedNames ...string) ([]Method,
 			comments: comments,
 		}
 		for _, param := range function.Params.List {
-			typ, err := ParseType(param.Type, importedNames...)
+			typ, err := ParseType(param.Type, importer)
 			if err != nil {
 				return nil, err
 			}
@@ -34,7 +34,7 @@ func ParseInterface(expr *ast.InterfaceType, importedNames ...string) ([]Method,
 			})
 		}
 		for _, out := range function.Results.List {
-			typ, err := ParseType(out.Type, importedNames...)
+			typ, err := ParseType(out.Type, importer)
 			if err != nil {
 				return nil, err
 			}

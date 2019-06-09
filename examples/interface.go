@@ -53,7 +53,7 @@ func main() {
 	}
 
 	for _, in := range interfaces {
-		methods, err := astgen.ParseInterface(in.typ, "time.Time")
+		methods, err := astgen.ParseInterface(in.typ, func(name string) bool { return true })
 		die(err)
 
 		println("")

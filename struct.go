@@ -26,7 +26,7 @@ var flatTypes = map[string]Kind{
 	"complex128": Complex128,
 }
 
-func ParseStruct(expr *ast.StructType, importedNames ...string) ([]Field, error) {
+func ParseStruct(expr *ast.StructType, importer Importer) ([]Field, error) {
 	var fields []Field
 	for _, field := range expr.Fields.List {
 		name := field.Names[0].Name
@@ -36,7 +36,7 @@ func ParseStruct(expr *ast.StructType, importedNames ...string) ([]Field, error)
 				comments = append(comments, comment.Text)
 			}
 		}
-		typ, err := ParseType(field.Type, importedNames...)
+		typ, err := ParseType(field.Type, importer)
 		if err != nil {
 			return nil, err
 		}
@@ -50,15 +50,15 @@ func ParseStruct(expr *ast.StructType, importedNames ...string) ([]Field, error)
 	return fields, nil
 }
 
-func MustParseStruct(expr *ast.StructType, importedNames ...string) []Field {
-	fields, err := ParseStruct(expr, importedNames...)
+func MustParseStruct(expr *ast.StructType, importer Importer) []Field {
+	fields, err := ParseStruct(expr, importer)
 	if err != nil {
 		panic(err)
 	}
 	return fields
 }
 
-func ParseType(expr ast.Expr, importedNames ...string) (Type, error) {
+func ParseType(expr ast.Expr, importer Importer) (Type, error) {
 	switch expr.(type) {
 	case *ast.Ident:
 		{
@@ -76,7 +76,7 @@ func ParseType(expr ast.Expr, importedNames ...string) (Type, error) {
 		}
 	case *ast.StarExpr:
 		{
-			t, err := ParseType(expr.(*ast.StarExpr).X, importedNames...)
+			t, err := ParseType(expr.(*ast.StarExpr).X, importer)
 			if err != nil {
 				return t, err
 			}
@@ -88,11 +88,11 @@ func ParseType(expr ast.Expr, importedNames ...string) (Type, error) {
 	case *ast.MapType:
 		{
 			m := expr.(*ast.MapType)
-			key, err := ParseType(m.Key, importedNames...)
+			key, err := ParseType(m.Key, importer)
 			if err != nil {
 				return key, err
 			}
-			value, err := ParseType(m.Value, importedNames...)
+			value, err := ParseType(m.Value, importer)
 			if err != nil {
 				return value, err
 			}
@@ -104,7 +104,7 @@ func ParseType(expr ast.Expr, importedNames ...string) (Type, error) {
 	case *ast.ArrayType:
 		{
 			array := expr.(*ast.ArrayType)
-			ele, err := ParseType(array.Elt, importedNames...)
+			ele, err := ParseType(array.Elt, importer)
 			if err != nil {
 				return ele, err
 			}
@@ -122,7 +122,7 @@ func ParseType(expr ast.Expr, importedNames ...string) (Type, error) {
 	case *ast.ChanType:
 		{
 			ch := expr.(*ast.ChanType)
-			ele, err := ParseType(ch.Value, importedNames...)
+			ele, err := ParseType(ch.Value, importer)
 			if err != nil {
 				return ele, err
 			}
@@ -136,14 +136,7 @@ func ParseType(expr ast.Expr, importedNames ...string) (Type, error) {
 			sel := expr.(*ast.SelectorExpr)
 			pkg := sel.X.(*ast.Ident)
 			fullName := fmt.Sprintf("%s.%s", pkg.Name, sel.Sel.Name)
-			found := false
-			for _, n := range importedNames {
-				if n == fullName {
-					found = true
-					break
-				}
-			}
-			if !found {
+			if !importer(fullName) {
 				return InvalidType, fmt.Errorf("imported '%s' is not allowed", fullName)
 			}
 			return Type{
