@@ -22,10 +22,16 @@ func ParseInterface(expr *ast.InterfaceType, importer Importer) ([]Method, error
 			if err != nil {
 				return nil, err
 			}
-			for _, ident := range param.Names {
+			if len(param.Names) > 0 {
+				for _, ident := range param.Names {
+					ins = append(ins, Field{
+						name: ident.Name,
+						typ:  typ,
+					})
+				}
+			} else {
 				ins = append(ins, Field{
-					name: ident.Name,
-					typ:  typ,
+					typ: typ,
 				})
 			}
 		}
@@ -34,10 +40,16 @@ func ParseInterface(expr *ast.InterfaceType, importer Importer) ([]Method, error
 			if err != nil {
 				return nil, err
 			}
-			for _, ident := range out.Names {
+			if len(out.Names) > 0 {
+				for _, ident := range out.Names {
+					outs = append(outs, Field{
+						name: ident.Name,
+						typ:  typ,
+					})
+				}
+			} else {
 				outs = append(outs, Field{
-					name: ident.Name,
-					typ:  typ,
+					typ: typ,
 				})
 			}
 		}
