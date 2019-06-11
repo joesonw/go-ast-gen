@@ -29,7 +29,6 @@ var flatTypes = map[string]Kind{
 func ParseStruct(expr *ast.StructType, importer Importer) ([]Field, error) {
 	var fields []Field
 	for _, field := range expr.Fields.List {
-		name := field.Names[0].Name
 		var comments []string
 		if field.Comment != nil {
 			for _, comment := range field.Comment.List {
@@ -40,12 +39,13 @@ func ParseStruct(expr *ast.StructType, importer Importer) ([]Field, error) {
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, Field{
-			name:     name,
-			typ:      typ,
-			comments: comments,
-		})
-
+		for _, ident := range field.Names {
+			fields = append(fields, Field{
+				name:     ident.Name,
+				typ:      typ,
+				comments: comments,
+			})
+		}
 	}
 	return fields, nil
 }
